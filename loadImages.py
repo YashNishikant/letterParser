@@ -4,8 +4,8 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-IMGSIZE = 100
-CHARSIZE = 28
+IMGSIZE = 28
+CHARSIZE = 20
 
 def load_images_from_folder(folder):
     images = []
@@ -20,8 +20,7 @@ def load_images_from_folder(folder):
                 images.append(img)
     return images
 
-
-def imageProcessingOperations(inputImg): # ASSERT: IMAGE IS WHITE BACKGROUND WITH BLACK DIGIT
+def processorLegacy(inputImg): # ASSERT: IMAGE IS WHITE BACKGROUND WITH BLACK DIGIT
     binary_image = cv2.bitwise_not(inputImg)
     contours, _ = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if(len(contours) == 0):
@@ -32,12 +31,26 @@ def imageProcessingOperations(inputImg): # ASSERT: IMAGE IS WHITE BACKGROUND WIT
 
     subImg = resizeImageProportinal(subImg)
 
+    plt.imshow(subImg, cmap='gray')
+    plt.show()
+
     _, subImg = cv2.threshold(subImg, 250, 255, cv2.THRESH_BINARY)
     canvas = np.ones((IMGSIZE, IMGSIZE), dtype="uint8") * 255
     startX = int(IMGSIZE/2) - int(subImg.shape[1]/2)
     startY = int(IMGSIZE/2) - int(subImg.shape[0]/2)
     canvas[startY:startY+subImg.shape[0], startX:startX+subImg.shape[1]] = subImg
-    return canvas # OUTPUT: IMAGE IS WHITE BACKGROUND WITH BLACK DIGIT
+    return canvas
+
+def imageProcessingOperations(inputImg): # ASSERT: IMAGE IS WHITE BACKGROUND WITH BLACK DIGIT
+
+    subImg = resizeImageProportinal(inputImg)
+    plt.imshow(subImg, cmap='gray')
+    plt.show()
+    canvas = np.ones((IMGSIZE, IMGSIZE), dtype="uint8") * 255
+    startX = int(IMGSIZE/2) - int(subImg.shape[1]/2)
+    startY = int(IMGSIZE/2) - int(subImg.shape[0]/2)
+    canvas[startY:startY+subImg.shape[0], startX:startX+subImg.shape[1]] = subImg
+    return canvas
 
 def resizeImageProportinal(subImg):
     if(subImg.shape[1] > CHARSIZE and subImg.shape[1] > subImg.shape[0]):

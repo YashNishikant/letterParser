@@ -3,25 +3,21 @@ import matplotlib.pyplot as plt
 from tensorflow import keras 
 from keras import datasets, layers, models
 import cv2
-from loadImages import imageProcessingOperations
+from loadImages import imageProcessingOperations, processorLegacy
+from detector import detector
 
-CATEGORIES = ['add','sub','mul','div','(',')','0','1','2','3','4','5','6','7','8','9']
-model = models.load_model('models/mathoperationsV14.model')
-IMGSIZE = 100
+IMGSIZE = 28
+model = models.load_model('assets/models/alphabetModel.model')
+output_labels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
-img = cv2.imread('ASSETS/plusTESTING.png', cv2.IMREAD_GRAYSCALE)
-img = cv2.resize(img, (IMGSIZE, IMGSIZE))
-img = imageProcessingOperations(img)
+# predArr = detector(cv2.imread('ASSETS/images/TESTING.png', cv2.IMREAD_GRAYSCALE))
 
-predArr = [img]
+predArr = processorLegacy(cv2.imread('ASSETS/images/TESTING.png', cv2.IMREAD_GRAYSCALE))
+
 xtest = np.array(predArr).reshape(-1,IMGSIZE,IMGSIZE,1)
-xtest = 255 - xtest
 xtest = xtest / 255
-
-plt.imshow(xtest[0], cmap='gray')
-plt.show()
 
 probs = model.predict(xtest)
 preds = np.argmax(probs, axis=1)
 for i in range(len(preds)):
-  print(CATEGORIES[preds[i]])
+  print(output_labels[preds[i]])
