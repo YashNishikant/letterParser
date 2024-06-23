@@ -13,7 +13,7 @@ def load_images_from_folder(folder):
         if filename.endswith(".jpg") or filename.endswith(".png"):  # Add other image formats if needed
             img_path = os.path.join(folder, filename)
             img = cv2.imread(img_path)
-            img = imageProcessingOperations(img)
+            img = imageProcessing(img)
             plt.imshow(img, cmap='gray')
             plt.show()
             if img is not None:
@@ -41,15 +41,16 @@ def processorLegacy(inputImg): # ASSERT: IMAGE IS WHITE BACKGROUND WITH BLACK DI
     canvas[startY:startY+subImg.shape[0], startX:startX+subImg.shape[1]] = subImg
     return canvas
 
-def imageProcessingOperations(inputImg): # ASSERT: IMAGE IS WHITE BACKGROUND WITH BLACK DIGIT
+def imageProcessing(inputImg): # ASSERT: IMAGE IS WHITE BACKGROUND WITH BLACK DIGIT
 
     subImg = resizeImageProportinal(inputImg)
-    plt.imshow(subImg, cmap='gray')
-    plt.show()
+    # plt.imshow(subImg, cmap='gray')
+    # plt.show()
     canvas = np.ones((IMGSIZE, IMGSIZE), dtype="uint8") * 255
     startX = int(IMGSIZE/2) - int(subImg.shape[1]/2)
     startY = int(IMGSIZE/2) - int(subImg.shape[0]/2)
     canvas[startY:startY+subImg.shape[0], startX:startX+subImg.shape[1]] = subImg
+    # print(canvas.shape)
     return canvas
 
 def resizeImageProportinal(subImg):
