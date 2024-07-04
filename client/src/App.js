@@ -9,7 +9,7 @@ function App() {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const lineWidth = 5;
+  const lineWidth = 15;
   const lineColor = "black";
   const lineOpacity = 2;
   const [drawStack, setDrawStack] = useState([]);
@@ -72,7 +72,7 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setAnswer(data.prediction);
+        setAnswer(data.prediction[0] + " --> " + data.prediction[1]);
       });
   };
 
