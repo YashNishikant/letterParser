@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import "./App.css";
 import { Typography } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function App() {
   const canvasRef = useRef(null);
@@ -13,6 +14,7 @@ function App() {
   const lineColor = "black";
   const lineOpacity = 2;
   const [drawStack, setDrawStack] = useState([]);
+  const [loadingState, setLoadingState] = useState(false);
   const [answer, setAnswer] = useState("ANSWER HERE");
 
   useEffect(() => {
@@ -33,7 +35,6 @@ function App() {
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    setDrawStack([]);
   };
 
   // Function for starting the drawing
@@ -45,7 +46,6 @@ function App() {
 
   // Function for ending the drawing
   const endDrawing = () => {
-    setDrawStack([...drawStack, ctxRef.current.getImageData(0, 0, 1280, 720)]);
     ctxRef.current.closePath();
     setIsDrawing(false);
   };
@@ -59,10 +59,14 @@ function App() {
   };
 
   const handleSubmit = () => {
+    setLoadingState(true);
+    fetchData();
+  };
+
+  const fetchData = async () => {
     const canvas = canvasRef.current;
     const dataURL = canvas.toDataURL("image/png");
-
-    fetch("http://localhost:5000/predict", {
+    await fetch("http://localhost:5000/predict", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -71,16 +75,30 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        setLoadingState(false);
         setAnswer(data.prediction[0] + " --> " + data.prediction[1]);
       });
   };
 
   return (
-    <div className="App">
-      <Typography variant="h4" style={{ marginTop: 20 }}>
-        {answer}
-      </Typography>
+    <div
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {loadingState ? (
+        <div style={{ marginTop: 20 }}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <Typography variant="h4" style={{ marginTop: 20 }}>
+          {answer}
+        </Typography>
+      )}
+
       <div className="draw-area">
         <canvas
           onMouseDown={startDrawing}
@@ -90,6 +108,8 @@ function App() {
           width={`1280px`}
           height={`720px`}
         />
+      </div>
+      <div>
         <Button
           style={{ marginTop: 10 }}
           variant="outlined"
